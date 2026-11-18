@@ -1,17 +1,80 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Mi página | AgroTech</title>
-	
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Monitor de Humedad en Vivo</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #0f172a;
+      color: #f8fafc;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .tarjeta {
+      background-color: #1e293b;
+      padding: 40px 60px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+      text-align: center;
+      border: 1px solid #334155;
+    }
+    h1 {
+      font-size: 1.4rem;
+      color: #94a3b8;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .valor {
+      font-size: 4.5rem;
+      font-weight: bold;
+      color: #38bdf8;
+      margin: 15px 0;
+    }
+    .estado {
+      font-size: 0.9rem;
+      color: #4ade80;
+    }
+  </style>
 </head>
 <body>
-	
-	<h1>AgroTech Web | Tecnología para el campo en tiempo real</h1>
-				
-    
-    
-    <script src="scripts.js"></script>
+
+  <div class="tarjeta">
+    <h1>Humedad Ambiental</h1>
+    <div class="valor" id="dato-humedad">-- %</div>
+    <div class="estado" id="estado-conexion">Conectando con Firebase...</div>
+  </div>
+
+  <script>
+    // PEGA AQUÍ LA MISMA URL DE FIREBASE (SIN LA BARRA "/" AL FINAL)
+    const firebaseURL = "https://sistema-de-riego-574e4-default-rtdb.firebaseio.com";
+
+    async function obtenerHumedad() {
+      try {
+        // Consultamos el dato en Firebase
+        const respuesta = await fetch(`${firebaseURL}/humedad.json`);
+        const humedad = await respuesta.json();
+
+        if (humedad !== null) {
+          document.getElementById("dato-humedad").innerText = humedad + " %";
+          document.getElementById("estado-conexion").innerText = "● En vivo desde Wokwi";
+          document.getElementById("estado-conexion").style.color = "#4ade80";
+        }
+      } catch (error) {
+        document.getElementById("estado-conexion").innerText = "Error de conexión";
+        document.getElementById("estado-conexion").style.color = "#f87171";
+      }
+    }
+
+    // Ejecuta la lectura al abrir la página y luego cada 2 segundos
+    obtenerHumedad();
+    setInterval(obtenerHumedad, 2000);
+  </script>
+
 </body>
 </html>
